@@ -7,6 +7,7 @@ const Wrapper = styled.div`
     height: 100vh;
     background-color: #111;
 `
+
 const CanvasSpan = styled.span`
     color: #777;
     position: absolute;
@@ -67,7 +68,7 @@ const Test = () => {
             }
 
             function render() {
-                let x = 0,
+                let x,
                     y,
                     cx = lineObj.width / 2,
                     cy = lineObj.height / 2
@@ -78,29 +79,37 @@ const Test = () => {
                 context.lineWidth = 2
                 context.beginPath()
 
-                let angle = 0
-
                 for (let i = POINTS; i > 0; i--) {
-                    angle = i * SPACING + (lineObj.time % SPACING)
-                    x = Math.sin(angle / 6) * Math.PI
-                    y = Math.cos(angle / 6) * Math.PI
+                    var value = i * SPACING + (lineObj.time % SPACING)
+                    var ax = Math.sin(value / POINTS_PER_LAP) * Math.PI,
+                        ay = Math.cos(value / POINTS_PER_LAP) * Math.PI
 
-                    x = x * angle
-                    y = y * angle * 0.35
+                    x = ax * value
+                    y = ay * value * 0.35
 
-                    context.globalAlpha = 1 - angle / MAX_OFFSET
-                    //context.shadowBlur = SHADOW_STRENGTH * 10
+                    var o = 1 - Math.min(value, PEAK) / PEAK
+
+                    y -= Math.pow(o, 2) * 200
+                    y += (200 * value) / MAX_OFFSET
+                    y += (x / cx) * lineObj.width * 0.1
+
+                    context.globalAlpha = 1 - value / MAX_OFFSET
+                    context.shadowBlur = SHADOW_STRENGTH * o
 
                     context.lineTo(cx + x, cy + y)
                     context.stroke()
+
                     context.beginPath()
                     context.moveTo(cx + x, cy + y)
                 }
+
                 context.lineTo(cx, cy - 200)
+                context.lineTo(cx, 0)
                 context.stroke()
             }
         }
     }, [canvas])
+
     return (
         <Wrapper>
             <CanvasMain></CanvasMain>
