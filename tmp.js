@@ -27,20 +27,23 @@ function setup() {
     document.addEventListener('touchstart', onTouchStart)
 }
 
-function clear() {
-    context.clearRect(0, 0, width, height)
-}
 function resize() {
     width = canvas.width = window.innerWidth
     height = canvas.height = window.innerHeight
 }
+
 function step() {
     time += velocity
     velocity += (velocityTarget - velocity) * 0.3
+
     clear()
     render()
 
     requestAnimationFrame(step)
+}
+
+function clear() {
+    context.clearRect(0, 0, width, height)
 }
 
 function render() {
@@ -59,9 +62,9 @@ function render() {
         var value = i * SPACING + (time % SPACING)
 
         var ax = Math.sin(value / POINTS_PER_LAP) * Math.PI,
-            ay = Math.cos(value / POINTS_PER_LAP) * Math.PI,
-            x = ax * value,
-            y = ay * value * 0.35
+            ay = Math.cos(value / POINTS_PER_LAP) * Math.PI
+
+        ;(x = ax * value), (y = ay * value * 0.35)
 
         var o = 1 - Math.min(value, PEAK) / PEAK
 
